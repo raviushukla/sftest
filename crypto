@@ -1,0 +1,169 @@
+/*
+* (c) Incapsulate LLC, 2019
+* Project: TWINE
+*   
+*
+* Apex Class Name: TwineDataExtractTest
+* Description: Test class for TwineDataExtract
+*
+* Modification Log
+* ===============================================================
+* Date                Developer           Description
+* -----------         ---------------     -----------------------
+* 27-March-2019       Ravi Shukla         Original Class
+*/
+
+@isTest
+private class TwineDataExtractTest {
+    
+    @TestSetup
+    static void setup() {
+        
+        List<Account> activeAccount = TestUtil.mockTwinePersonAccount(1,'Verified');
+        Id CaseRecordTypeId = Schema.SObjectType.Case.getRecordTypeInfosByName().get('TWINE Support').getRecordTypeId();
+        
+        System.assertEquals(1, activeAccount.size(), 'Account is inserted.');
+        Contact personContact = new Contact(
+            id = activeAccount[0].PersonContactId,LastName='test',
+            email = 'testPerson@jh.com');
+        insert personContact;
+        Case caseObj = new Case();
+        caseObj.Origin = 'Email';
+        caseObj.Type = 'Tech Support';
+        caseObj.Priority = 'Medium';
+        caseObj.AccountId = activeAccount[0].id;
+        caseObj.ContactId = personContact.Id;
+        caseObj.RecordTypeID = CaseRecordTypeId;
+        insert caseObj;
+        
+        
+        
+    }
+    
+    static testMethod void testDoGetMethodWithLargeOffsetCondition(){
+        
+        
+        TwineDataExtract.DataResult dd = new TwineDataExtract.DataResult();
+        
+        RestRequest req = new RestRequest();
+        req.params.put('date', '');
+        req.params.put('caseNumber', '18342354');
+        req.params.put('pageSize', '22');
+        req.params.put('pageNumber', '102');
+        
+        RestResponse res = new RestResponse();
+        
+        RestContext.request = req;
+        RestContext.response = res;
+        
+        Test.startTest();
+        
+        TwineDataExtract.doGet();
+        
+        Test.stopTest();
+        
+    }
+    
+    static testMethod void testDoGetMethodWithCaseSizeLessThenPageSizeParameter(){
+        TwineDataExtract.DataResult dd = new TwineDataExtract.DataResult();
+        insert new TwineEmailSalt__c(Salt__c = 'This is TestSalt');
+        Case cs = [SELECT ID, CaseNumber, LastModifieddate, ContactEmail  FROM CASE LIMIT 1];         
+        
+        RestRequest req = new RestRequest();
+        req.params.put('date', '03/25/2019 10:36 AM');
+        req.params.put('caseNumber', '00130950');
+        req.params.put('pageSize', '2');
+        req.params.put('pageNumber', '1');
+        
+        RestResponse res = new RestResponse();
+        
+        RestContext.request = req;
+        RestContext.response = res;
+        
+        Test.startTest();
+        
+        TwineDataExtract.doGet();
+        
+        Test.stopTest();
+        
+    }
+    
+    static testMethod void testDoGetMethodWithCaseSizeEqualsPageSizeParameter(){
+        TwineDataExtract.DataResult dd = new TwineDataExtract.DataResult();
+        insert new TwineEmailSalt__c(Salt__c = 'This is TestSalt');
+        Case cs = [SELECT ID, CaseNumber, LastModifieddate, ContactEmail  FROM CASE LIMIT 1];         
+        
+        RestRequest req = new RestRequest();
+        req.params.put('date', '03/25/2019 10:36 AM');
+        req.params.put('caseNumber', '00130950');
+        req.params.put('pageSize', '1');
+        req.params.put('pageNumber', '1');
+        
+        RestResponse res = new RestResponse();
+        
+        RestContext.request = req;
+        RestContext.response = res;
+        
+        Test.startTest();
+        
+        TwineDataExtract.doGet();
+        
+        Test.stopTest();
+        
+    }
+    
+    static testMethod void testDoGetMethodWithCatchTypeException(){
+        TwineDataExtract.DataResult dd = new TwineDataExtract.DataResult();
+        
+        Case cs = [SELECT ID, CaseNumber, LastModifieddate  FROM CASE LIMIT 1];         
+        
+        
+        RestRequest req = new RestRequest();
+        req.params.put('date', '2019-03-22 09:04:58');
+        req.params.put('caseNumber', '00000022');
+        req.params.put('pageSize', '1');
+        req.params.put('pageNumber', '10');
+        
+        RestResponse res = new RestResponse();
+        
+        RestContext.request = req;
+        RestContext.response = res;
+        
+        
+        
+        Test.startTest();
+        
+        TwineDataExtract.doGet();
+        
+        Test.stopTest();
+        
+    }
+    
+    static testMethod void testDoGetMethodWithCatchInvalidParameterException(){
+        TwineDataExtract.DataResult dd = new TwineDataExtract.DataResult();
+        
+        Case cs = [SELECT ID, CaseNumber, LastModifieddate,RecordType.DeveloperName  FROM CASE LIMIT 1];         
+               
+        
+        RestRequest req = new RestRequest();
+        req.params.put('date', '03/25/2019 10:36 AM');
+        req.params.put('caseNumber', '00000022');
+        req.params.put('pageSize', '1');
+        req.params.put('pageNumber', '10');
+        
+        RestResponse res = new RestResponse();
+        
+        RestContext.request = req;
+        RestContext.response = res;
+        
+        
+        
+        Test.startTest();
+        
+        TwineDataExtract.doGet();
+        
+        Test.stopTest();
+        
+    }
+    
+}
