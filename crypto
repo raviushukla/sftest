@@ -1,17 +1,3 @@
-/*
-* (c) Incapsulate LLC, 2019
-* Project: TWINE
-*   
-*
-* Apex Class Name: TwineDataExtractTest
-* Description: Test class for TwineDataExtract
-*
-* Modification Log
-* ===============================================================
-* Date                Developer           Description
-* -----------         ---------------     -----------------------
-* 27-March-2019       Ravi Shukla         Original Class
-*/
 
 @isTest
 private class TwineDataExtractTest {
